@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "vQHXiJXMawT573gCxVxfl0nBXyHfAvV5qWE4jV5AeUE=",
+  "Source": "GearShare.Api",
+  "BasePath": "_content/GearShare.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
