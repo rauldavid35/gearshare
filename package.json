@@ -1,0 +1,17 @@
+{
+  "name": "gearshare",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently -n API,WEB -c blue,green \"cd backend/GearShare.Api && set ASPNETCORE_URLS=http://localhost:5131 && dotnet run\" \"cd frontend/gearshare && ng serve\""
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* optional helper */
+.app-container { @apply max-w-4xl mx-auto p-6; }

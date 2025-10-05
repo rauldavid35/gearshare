@@ -1,0 +1,11 @@
+<nav class="w-full bg-slate-100 border-b">
+  <div class="app-container flex items-center justify-between py-3">
+    <a routerLink="/" class="font-bold">GearShare</a>
+    <div class="space-x-4 text-sm">
+      <a routerLink="/app" class="underline">App</a>
+      <a routerLink="/login" (click)="logout($event)">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>

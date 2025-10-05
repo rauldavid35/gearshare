@@ -1,0 +1,74 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md rounded-2xl shadow p-6">
+    <h1 class="text-2xl font-semibold mb-6 text-center">Create account</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+      <div>
+        <label class="block text-sm mb-1">Full name</label>
+        <input
+          type="text"
+          formControlName="displayName"
+          class="w-full rounded-lg border px-3 py-2"
+          placeholder="John Smith" />
+        <p *ngIf="f.displayName.touched && f.displayName.invalid" class="text-sm mt-1">
+          <span *ngIf="f.displayName.errors?.['required']">Full name is required.</span>
+          <span *ngIf="f.displayName.errors?.['minlength']">At least 2 characters.</span>
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Email</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="w-full rounded-lg border px-3 py-2"
+          placeholder="you@example.com" />
+        <p *ngIf="f.email.touched && f.email.invalid" class="text-sm mt-1">
+          <span *ngIf="f.email.errors?.['required']">Email is required.</span>
+          <span *ngIf="f.email.errors?.['email']">Enter a valid email.</span>
+        </p>
+      </div>
+
+      <div [formGroup]="pg" class="space-y-4">
+        <div>
+          <label class="block text-sm mb-1">Password</label>
+          <input
+            type="password"
+            formControlName="password"
+            class="w-full rounded-lg border px-3 py-2"
+            placeholder="••••••••" />
+          <p *ngIf="pw.touched && pw.invalid" class="text-sm mt-1">
+            <span *ngIf="pw.errors?.['required']">Password is required.</span>
+            <span *ngIf="pw.errors?.['minlength']">Minimum 6 characters.</span>
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1">Confirm password</label>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            class="w-full rounded-lg border px-3 py-2"
+            placeholder="••••••••" />
+          <p *ngIf="(cpw.touched || pw.touched) && pg.errors?.['passwordMismatch']" class="text-sm mt-1">
+            Passwords do not match.
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="loading"
+        class="w-full rounded-xl border px-4 py-2 font-medium disabled:opacity-60">
+        {{ loading ? 'Creating…' : 'Create account' }}
+      </button>
+
+      <p *ngIf="apiError" class="text-sm mt-2">{{ apiError }}</p>
+    </form>
+
+    <p class="text-sm mt-6 text-center">
+      Already have an account?
+      <a routerLink="/login" class="underline">Sign in</a>
+    </p>
+  </div>
+</div>
