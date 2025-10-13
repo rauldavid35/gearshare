@@ -1,0 +1,24 @@
+<div class="app-container">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold">Listings</h2>
+    <a routerLink="/app/listings/new" class="bg-black text-white rounded px-4 py-2">Add Listing</a>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div *ngFor="let l of listings" class="border rounded p-4">
+      <div class="font-medium mb-1">{{ l.itemTitle || ('Item: ' + l.itemId) }}</div>
+
+      <img *ngIf="l.coverImage"
+           [src]="l.coverImage"
+           alt=""
+           class="w-full h-28 object-cover rounded border mb-2">
+
+      <div class="text-sm text-slate-600">Price/day: {{ l.pricePerDay }} • Deposit: {{ l.deposit }}</div>
+      <div class="text-sm text-slate-600">City: {{ l.locationCity || '—' }} • Active: {{ l.active }}</div>
+      <div class="mt-2 flex gap-3">
+        <a [routerLink]="['/app/listings', l.id, 'edit']" class="underline">Edit</a>
+        <button class="underline text-red-600" (click)="remove(l.id)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

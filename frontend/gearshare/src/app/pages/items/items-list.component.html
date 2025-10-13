@@ -1,0 +1,20 @@
+<div class="app-container">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex gap-2">
+      <input class="border rounded px-3 py-2 w-64" [(ngModel)]="q" placeholder="Search title or description" (keyup.enter)="load()">
+      <button class="border rounded px-4" (click)="load()">Search</button>
+    </div>
+    <a routerLink="/app/items/new" class="bg-black text-white rounded px-4 py-2">Add Item</a>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    <div *ngFor="let i of items" class="border rounded p-4">
+      <h3 class="font-semibold">{{ i.title }}</h3>
+      <p class="text-slate-600 text-sm line-clamp-2">{{ i.description }}</p>
+      <div class="mt-2 flex gap-3">
+        <a [routerLink]="['/app/items', i.id, 'edit']" class="underline">Edit</a>
+        <button class="underline text-red-600" (click)="remove(i.id)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\rauld\\OneDrive\\Desktop\\VisualStudio\\gearshare\\backend\\GearShare.Api\\wwwroot\\uploads\\items\\fc35a518-8f90-4c2f-8b4f-1ccea50372cf\\7ae64bd8-a48d-472e-be4c-d7e626f715e4.png",
+      "PackagePath": "staticwebassets\\uploads\\items\\fc35a518-8f90-4c2f-8b4f-1ccea50372cf\\7ae64bd8-a48d-472e-be4c-d7e626f715e4.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.GearShare.Api.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.GearShare.Api.props",
+      "PackagePath": "build\\GearShare.Api.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.GearShare.Api.props",
+      "PackagePath": "buildMultiTargeting\\GearShare.Api.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.GearShare.Api.props",
+      "PackagePath": "buildTransitive\\GearShare.Api.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

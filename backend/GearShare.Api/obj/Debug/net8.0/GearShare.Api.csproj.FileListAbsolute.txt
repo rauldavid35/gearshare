@@ -1,5 +1,6 @@
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\appsettings.json
+C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\GearShare.Api.staticwebassets.runtime.json
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\GearShare.Api.exe
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\GearShare.Api.deps.json
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\GearShare.Api.runtimeconfig.json
@@ -7,6 +8,9 @@ C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\GearShare.Api.pdb
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\AutoMapper.dll
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\FluentValidation.dll
+C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
+C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\Humanizer.dll
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\rauld\OneDrive\Desktop\VisualStudio\gearshare\backend\GearShare.Api\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.Internal.dll

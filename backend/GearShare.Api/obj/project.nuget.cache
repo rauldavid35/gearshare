@@ -1,11 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "s2hD2R05BsE=",
+  "dgSpecHash": "/GuoRD4xUxk=",
   "success": true,
   "projectFilePath": "C:\\Users\\rauld\\OneDrive\\Desktop\\VisualStudio\\gearshare\\backend\\GearShare.Api\\GearShare.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rauld\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\rauld\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
+    "C:\\Users\\rauld\\.nuget\\packages\\fluentvalidation\\12.0.0\\fluentvalidation.12.0.0.nupkg.sha512",
+    "C:\\Users\\rauld\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.3.1\\fluentvalidation.aspnetcore.11.3.1.nupkg.sha512",
+    "C:\\Users\\rauld\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.0.0\\fluentvalidation.dependencyinjectionextensions.12.0.0.nupkg.sha512",
     "C:\\Users\\rauld\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\rauld\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.20\\microsoft.aspnetcore.authentication.jwtbearer.8.0.20.nupkg.sha512",
     "C:\\Users\\rauld\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.20\\microsoft.aspnetcore.cryptography.internal.8.0.20.nupkg.sha512",

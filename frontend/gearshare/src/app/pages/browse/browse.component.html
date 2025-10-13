@@ -1,0 +1,21 @@
+<div class="app-container">
+  <h2 class="text-lg font-semibold mb-4">Browse listings</h2>
+
+  <div *ngIf="!listings.length" class="text-slate-500">
+    No listings yet. Try creating one as an OWNER.
+  </div>
+
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" *ngIf="listings.length">
+    <div *ngFor="let l of listings" class="border rounded p-4">
+      <div class="font-semibold mb-1">{{ l.itemTitle || ('Item: ' + l.itemId) }}</div>
+
+      <img *ngIf="l.coverImage"
+           [src]="l.coverImage"
+           alt=""
+           class="w-full h-32 object-cover rounded border mb-2">
+
+      <div class="text-sm text-slate-600">Price/day: {{ l.pricePerDay }} • Deposit: {{ l.deposit }}</div>
+      <div class="text-sm text-slate-600">City: {{ l.locationCity || '—' }}</div>
+    </div>
+  </div>
+</div>

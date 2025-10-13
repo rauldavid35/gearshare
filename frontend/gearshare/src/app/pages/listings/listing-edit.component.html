@@ -1,0 +1,48 @@
+<div class="app-container max-w-xl">
+  <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+    <div>
+      <label class="block text-sm mb-1">Item</label>
+      <select class="w-full border rounded px-3 py-2" formControlName="itemId" [disabled]="!!id">
+        <option value="" disabled>Select item…</option>
+        <option *ngFor="let i of allItems" [value]="i.id">{{ i.title }}</option>
+      </select>
+      <p class="text-xs text-slate-500" *ngIf="id">You cannot change the item of an existing listing.</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="block text-sm mb-1">Price / day</label>
+        <input type="number" class="w-full border rounded px-3 py-2" formControlName="pricePerDay">
+      </div>
+      <div>
+        <label class="block text-sm mb-1">Deposit</label>
+        <input type="number" class="w-full border rounded px-3 py-2" formControlName="deposit">
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm mb-1">City</label>
+      <input class="w-full border rounded px-3 py-2" formControlName="locationCity">
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="block text-sm mb-1">Lat</label>
+        <input type="number" class="w-full border rounded px-3 py-2" formControlName="locationLat">
+      </div>
+      <div>
+        <label class="block text-sm mb-1">Lng</label>
+        <input type="number" class="w-full border rounded px-3 py-2" formControlName="locationLng">
+      </div>
+    </div>
+
+    <label class="inline-flex items-center gap-2">
+      <input type="checkbox" formControlName="active">
+      <span>Active</span>
+    </label>
+
+    <div>
+      <button class="bg-black text-white rounded px-4 py-2">Save</button>
+    </div>
+  </form>
+</div>

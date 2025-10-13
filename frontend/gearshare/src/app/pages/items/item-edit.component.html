@@ -1,0 +1,40 @@
+<div class="app-container max-w-xl">
+  <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
+    <div>
+      <label class="block text-sm mb-1">Title</label>
+      <input class="w-full border rounded px-3 py-2" formControlName="title">
+    </div>
+
+    <div>
+      <label class="block text-sm mb-1">Description</label>
+      <textarea class="w-full border rounded px-3 py-2" formControlName="description"></textarea>
+    </div>
+
+    <div>
+      <label class="block text-sm mb-1">Category</label>
+      <select class="w-full border rounded px-3 py-2" formControlName="category">
+        <option *ngFor="let c of categories" [value]="c.value">{{ c.label }}</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm mb-1">Condition</label>
+      <input class="w-full border rounded px-3 py-2" formControlName="condition" placeholder="GOOD / LIKE_NEW / FAIR">
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button class="bg-black text-white rounded px-4 py-2">Save</button>
+      <input type="file" (change)="onFile($event)" [disabled]="!id">
+      <span class="text-xs text-slate-500" *ngIf="!id">Save first to enable image upload</span>
+    </div>
+  </form>
+
+  <div *ngIf="item?.images?.length" class="mt-6">
+    <h3 class="font-semibold mb-2">Images</h3>
+    <div class="grid grid-cols-3 gap-3">
+      <img *ngFor="let img of item!.images"
+           [src]="toImg(img)"
+           class="w-full h-28 object-cover rounded border">
+    </div>
+  </div>
+</div>
