@@ -33,7 +33,7 @@
     <h3 class="font-semibold mb-2">Images</h3>
     <div class="grid grid-cols-3 gap-3">
       <img *ngFor="let img of item!.images"
-           [src]="toImg(img)"
+           [src]="img"
            class="w-full h-28 object-cover rounded border">
     </div>
   </div>

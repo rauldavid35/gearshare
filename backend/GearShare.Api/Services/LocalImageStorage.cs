@@ -5,33 +5,50 @@ namespace GearShare.Api.Services
     public class LocalImageStorage : IImageStorage
     {
         private readonly IWebHostEnvironment _env;
-        public LocalImageStorage(IWebHostEnvironment env) => _env = env;
 
-        public async Task<(string fileName, string relativePath)> SaveItemImageAsync(
-            Guid itemId,
-            IFormFile file,
-            CancellationToken ct)
+        public LocalImageStorage(IWebHostEnvironment env)
         {
-            // Resolve wwwroot even if WebRootPath is null
-            var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+            _env = env;
+        }
 
-            // Keep the same folder convention consistently (hyphenated GUID)
-            var itemFolder = Path.Combine(webRoot, "uploads", "items", itemId.ToString()); // e.g. aaaaa-bbbb-...
-            Directory.CreateDirectory(itemFolder);
+        public async Task<(string relativePath, string fileName)> SaveItemImageAsync(Guid itemId, IFormFile file)
+        {
+            var uploadsDir = Path.Combine(_env.WebRootPath, "uploads", "items", itemId.ToString());
+            Directory.CreateDirectory(uploadsDir);
 
-            var ext = Path.GetExtension(file.FileName);
-            var fileName = $"{Guid.NewGuid():N}{ext}";
-            var fullPath = Path.Combine(itemFolder, fileName);
+            var fileName = $"{Guid.NewGuid():N}{Path.GetExtension(file.FileName)}";
+            var fullPath = Path.Combine(uploadsDir, fileName);
 
-            await using (var fs = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (var stream = new FileStream(fullPath, FileMode.Create))
             {
-                await file.CopyToAsync(fs, ct);
+                await file.CopyToAsync(stream);
             }
 
-            // Return a URL-like relative path the browser can use via StaticFiles
-            // Leading "/" + forward slashes
-            var rel = $"/uploads/items/{itemId}/{fileName}".Replace("\\", "/");
-            return (fileName, rel);
+            // store with leading slash to work with ToAbsoluteContentUrl
+            var relative = $"/uploads/items/{itemId}/{fileName}";
+            return (relative, fileName);
+        }
+
+        public Task DeleteAsync(string relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return Task.CompletedTask;
+
+            // Accepts "/uploads/items/..." or "uploads/items/..."
+            var rel = relativePath.TrimStart('/', '\\');
+            var full = Path.Combine(_env.WebRootPath, rel);
+
+            try
+            {
+                if (File.Exists(full))
+                    File.Delete(full);
+            }
+            catch
+            {
+                // optional: log
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

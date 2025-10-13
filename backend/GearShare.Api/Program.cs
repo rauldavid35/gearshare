@@ -76,6 +76,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<GearShare.Api.Services.IImageStorage, GearShare.Api.Services.LocalImageStorage>();
 // after builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddFluentValidationAutoValidation();      // rulează validarea automat în pipeline

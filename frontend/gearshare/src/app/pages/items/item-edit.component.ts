@@ -4,7 +4,6 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemsService } from '../../services/items.service';
 import { ItemCategory, ItemDto } from '../../models/item.model';
-import { environment } from '../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -17,9 +16,6 @@ export class ItemEditComponent {
   private api = inject(ItemsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-
-  // e.g. from http://localhost:5131/api -> http://localhost:5131
-  apiOrigin = environment.apiUrl.replace(/\/api\/?$/, '');
 
   id = this.route.snapshot.paramMap.get('id');
   item?: ItemDto;
@@ -77,7 +73,7 @@ export class ItemEditComponent {
     this.api.uploadImage(this.id, file).subscribe({
       next: () => {
         (e.target as HTMLInputElement).value = '';
-        this.loadItem(); // refresh to show new image
+        this.loadItem(); // refresh to show new image (URLs are absolute from API)
       },
       error: (err) => {
         console.error('Upload failed', err);
@@ -85,12 +81,5 @@ export class ItemEditComponent {
         alert('Upload failed.');
       }
     });
-  }
-
-  // Prefix relative paths with the API origin so images load from port 5131
-  toImg(path?: string | null): string {
-    if (!path) return '';
-    if (/^https?:\/\//i.test(path)) return path; // already absolute
-    return `${this.apiOrigin}${path.startsWith('/') ? path : '/' + path}`;
   }
 }

@@ -5,10 +5,13 @@ using GearShare.Api.Domain.Entities;
 using GearShare.Api.Domain.Enums;
 using GearShare.Api.DTOs.Items;
 using GearShare.Api.Models;
+using GearShare.Api.Services;
+using GearShare.Api.Utils; // ToAbsoluteContentUrl
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq; // for Enumerable.Empty
 
 namespace GearShare.Api.Controllers;
 
@@ -19,12 +22,18 @@ public class ItemsController : ControllerBase
     private readonly AppDbContext _db;
     private readonly IMapper _mapper;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IImageStorage _imageStorage;
 
-    public ItemsController(AppDbContext db, IMapper mapper, UserManager<ApplicationUser> userManager)
+    public ItemsController(
+        AppDbContext db,
+        IMapper mapper,
+        UserManager<ApplicationUser> userManager,
+        IImageStorage imageStorage)
     {
         _db = db;
         _mapper = mapper;
         _userManager = userManager;
+        _imageStorage = imageStorage;
     }
 
     // GET /api/items?q=&cat=0
@@ -40,7 +49,9 @@ public class ItemsController : ControllerBase
         if (!string.IsNullOrWhiteSpace(q))
         {
             var ql = q.Trim().ToLower();
-            query = query.Where(i => i.Title.ToLower().Contains(ql) || (i.Description != null && i.Description.ToLower().Contains(ql)));
+            query = query.Where(i =>
+                i.Title.ToLower().Contains(ql) ||
+                (i.Description != null && i.Description.ToLower().Contains(ql)));
         }
 
         if (cat.HasValue)
@@ -50,7 +61,18 @@ public class ItemsController : ControllerBase
         }
 
         var items = await query.OrderByDescending(i => i.Id).ToListAsync(ct);
-        return Ok(_mapper.Map<List<ItemDto>>(items));
+        var dtos = _mapper.Map<List<ItemDto>>(items);
+
+        // Build a non-null list of absolute URLs
+        for (int i = 0; i < dtos.Count; i++)
+        {
+            var imgs = (dtos[i].Images ?? Enumerable.Empty<string>())
+                .Select(p => Request.ToAbsoluteContentUrl(p)!)
+                .ToList();
+            dtos[i] = dtos[i] with { Images = imgs };
+        }
+
+        return Ok(dtos);
     }
 
     // GET /api/items/{id}
@@ -58,12 +80,20 @@ public class ItemsController : ControllerBase
     public async Task<ActionResult<ItemDto>> GetOne(Guid id, CancellationToken ct)
     {
         var item = await _db.Items
+            .AsNoTracking()
             .Include(i => i.Images)
             .Include(i => i.Listings)
             .FirstOrDefaultAsync(i => i.Id == id, ct);
 
         if (item is null) return NotFound();
-        return Ok(_mapper.Map<ItemDto>(item));
+
+        var dto = _mapper.Map<ItemDto>(item);
+        var imgs = (dto.Images ?? Enumerable.Empty<string>())
+            .Select(p => Request.ToAbsoluteContentUrl(p)!)
+            .ToList();
+        dto = dto with { Images = imgs };
+
+        return Ok(dto);
     }
 
     // POST /api/items
@@ -78,7 +108,17 @@ public class ItemsController : ControllerBase
         _db.Items.Add(entity);
         await _db.SaveChangesAsync(ct);
 
-        var dto = _mapper.Map<ItemDto>(entity);
+        var reloaded = await _db.Items
+            .AsNoTracking()
+            .Include(i => i.Images)
+            .FirstAsync(i => i.Id == entity.Id, ct);
+
+        var dto = _mapper.Map<ItemDto>(reloaded);
+        var imgs = (dto.Images ?? Enumerable.Empty<string>())
+            .Select(p => Request.ToAbsoluteContentUrl(p)!)
+            .ToList();
+        dto = dto with { Images = imgs };
+
         return CreatedAtAction(nameof(GetOne), new { id = entity.Id }, dto);
     }
 
@@ -103,14 +143,29 @@ public class ItemsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
-        var item = await _db.Items.FirstOrDefaultAsync(i => i.Id == id, ct);
+        var item = await _db.Items
+            .Include(i => i.Images)
+            .Include(i => i.Listings)
+            .FirstOrDefaultAsync(i => i.Id == id, ct);
+
         if (item is null) return NotFound();
 
         if (!IsOwnerOrAdmin(item.OwnerId))
             return Forbid();
 
+        // 1) remember file paths before removing from DB
+        var imagePaths = item.Images.Select(img => img.RelativePath).ToList();
+
+        // 2) remove from DB (cascades to ItemImages & Listings)
         _db.Items.Remove(item);
         await _db.SaveChangesAsync(ct);
+
+        // 3) delete physical files (ignore failures)
+        foreach (var rel in imagePaths)
+        {
+            try { await _imageStorage.DeleteAsync(rel); } catch { /* optional log */ }
+        }
+
         return NoContent();
     }
 

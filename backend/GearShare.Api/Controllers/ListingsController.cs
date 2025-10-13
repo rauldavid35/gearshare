@@ -4,6 +4,7 @@ using GearShare.Api.Data;
 using GearShare.Api.Domain.Entities;
 using GearShare.Api.DTOs.Listings;
 using GearShare.Api.Models;
+using GearShare.Api.Utils; // <-- absolute URL helper
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,54 +28,65 @@ public class ListingsController : ControllerBase
     }
 
     // GET /api/listings
-[HttpGet]
-public async Task<ActionResult<IEnumerable<ListingDto>>> GetAll([FromQuery] Guid? itemId, CancellationToken ct)
-{
-    var q = _db.Listings.AsNoTracking()
-        .Include(l => l.Item)
-            .ThenInclude(i => i.Images)
-        .AsQueryable();
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ListingDto>>> GetAll([FromQuery] Guid? itemId, CancellationToken ct)
+    {
+        var q = _db.Listings.AsNoTracking()
+            .Include(l => l.Item)
+                .ThenInclude(i => i.Images)
+            .AsQueryable();
 
-    if (itemId.HasValue) q = q.Where(l => l.ItemId == itemId.Value);
+        if (itemId.HasValue) q = q.Where(l => l.ItemId == itemId.Value);
 
-    var list = await q.OrderByDescending(l => l.Id).ToListAsync(ct);
-    return Ok(_mapper.Map<List<ListingDto>>(list));
-}
+        var list = await q.OrderByDescending(l => l.Id).ToListAsync(ct);
+        var dtos = _mapper.Map<List<ListingDto>>(list);
 
-// GET /api/listings/{id}
-[HttpGet("{id:guid}")]
-public async Task<ActionResult<ListingDto>> GetOne(Guid id, CancellationToken ct)
-{
-    var entity = await _db.Listings.AsNoTracking()
-        .Include(l => l.Item)
-            .ThenInclude(i => i.Images)
-        .FirstOrDefaultAsync(l => l.Id == id, ct);
+        // Make cover image absolute (if present)
+        for (int i = 0; i < dtos.Count; i++)
+            dtos[i] = dtos[i] with { CoverImage = Request.ToAbsoluteContentUrl(dtos[i].CoverImage) };
 
-    if (entity is null) return NotFound();
-    return Ok(_mapper.Map<ListingDto>(entity));
-}
+        return Ok(dtos);
+    }
 
-// (opțional, la POST reîncarci cu Include ca să primești și titlul/cover în răspuns)
-[Authorize(Roles = "OWNER,ADMIN")]
-[HttpPost]
-public async Task<ActionResult<ListingDto>> Create([FromBody] CreateListingRequest req, CancellationToken ct)
-{
-    var item = await _db.Items.FirstOrDefaultAsync(i => i.Id == req.ItemId, ct);
-    if (item is null) return BadRequest("Item not found.");
-    if (!IsOwnerOrAdmin(item.OwnerId)) return Forbid();
+    // GET /api/listings/{id}
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ListingDto>> GetOne(Guid id, CancellationToken ct)
+    {
+        var entity = await _db.Listings.AsNoTracking()
+            .Include(l => l.Item)
+                .ThenInclude(i => i.Images)
+            .FirstOrDefaultAsync(l => l.Id == id, ct);
 
-    var entity = _mapper.Map<Listing>(req);
-    _db.Listings.Add(entity);
-    await _db.SaveChangesAsync(ct);
+        if (entity is null) return NotFound();
 
-    var withItem = await _db.Listings.AsNoTracking()
-        .Include(l => l.Item).ThenInclude(i => i.Images)
-        .FirstAsync(l => l.Id == entity.Id, ct);
+        var dto = _mapper.Map<ListingDto>(entity);
+        dto = dto with { CoverImage = Request.ToAbsoluteContentUrl(dto.CoverImage) };
+        return Ok(dto);
+    }
 
-    var dto = _mapper.Map<ListingDto>(withItem);
-    return CreatedAtAction(nameof(GetOne), new { id = entity.Id }, dto);
-}
+    // POST /api/listings
+    [Authorize(Roles = "OWNER,ADMIN")]
+    [HttpPost]
+    public async Task<ActionResult<ListingDto>> Create([FromBody] CreateListingRequest req, CancellationToken ct)
+    {
+        var item = await _db.Items.FirstOrDefaultAsync(i => i.Id == req.ItemId, ct);
+        if (item is null) return BadRequest("Item not found.");
+        if (!IsOwnerOrAdmin(item.OwnerId)) return Forbid();
 
+        var entity = _mapper.Map<Listing>(req);
+        _db.Listings.Add(entity);
+        await _db.SaveChangesAsync(ct);
+
+        // Re-load with Item+Images so DTO has title/cover, then absolutize URL
+        var withItem = await _db.Listings.AsNoTracking()
+            .Include(l => l.Item).ThenInclude(i => i.Images)
+            .FirstAsync(l => l.Id == entity.Id, ct);
+
+        var dto = _mapper.Map<ListingDto>(withItem);
+        dto = dto with { CoverImage = Request.ToAbsoluteContentUrl(dto.CoverImage) };
+
+        return CreatedAtAction(nameof(GetOne), new { id = entity.Id }, dto);
+    }
 
     // PUT /api/listings/{id}
     [Authorize(Roles = "OWNER,ADMIN")]

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "wl9AsPqhbdXJSksdy2UDoLUoOlzoKcDkZlCdrIMl7tg=",
+  "Hash": "lPqHglNkhxBvGDxIP3RvH+nItvbfKGeHuXzOJ1DGgQQ=",
   "Source": "GearShare.Api",
   "BasePath": "_content/GearShare.Api",
   "Mode": "Default",
@@ -16,6 +16,44 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "C:\\Users\\rauld\\OneDrive\\Desktop\\VisualStudio\\gearshare\\backend\\GearShare.Api\\wwwroot\\uploads\\items\\5d960dff-dc72-4c10-9cc8-fcc529d9d82c\\01d0b82238f7439db737bb803ff99de0.png",
+      "SourceId": "GearShare.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\rauld\\OneDrive\\Desktop\\VisualStudio\\gearshare\\backend\\GearShare.Api\\wwwroot\\",
+      "BasePath": "_content/GearShare.Api",
+      "RelativePath": "uploads/items/5d960dff-dc72-4c10-9cc8-fcc529d9d82c/01d0b82238f7439db737bb803ff99de0.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\items\\5d960dff-dc72-4c10-9cc8-fcc529d9d82c\\01d0b82238f7439db737bb803ff99de0.png"
+    },
+    {
+      "Identity": "C:\\Users\\rauld\\OneDrive\\Desktop\\VisualStudio\\gearshare\\backend\\GearShare.Api\\wwwroot\\uploads\\items\\e874e012-13c7-4ae4-a389-a3e6746f100a\\0d1a9321d18345968170bc7988115ccf.png",
+      "SourceId": "GearShare.Api",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\rauld\\OneDrive\\Desktop\\VisualStudio\\gearshare\\backend\\GearShare.Api\\wwwroot\\",
+      "BasePath": "_content/GearShare.Api",
+      "RelativePath": "uploads/items/e874e012-13c7-4ae4-a389-a3e6746f100a/0d1a9321d18345968170bc7988115ccf.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\items\\e874e012-13c7-4ae4-a389-a3e6746f100a\\0d1a9321d18345968170bc7988115ccf.png"
+    },
     {
       "Identity": "C:\\Users\\rauld\\OneDrive\\Desktop\\VisualStudio\\gearshare\\backend\\GearShare.Api\\wwwroot\\uploads\\items\\fc35a518-8f90-4c2f-8b4f-1ccea50372cf\\7ae64bd8-a48d-472e-be4c-d7e626f715e4.png",
       "SourceId": "GearShare.Api",
