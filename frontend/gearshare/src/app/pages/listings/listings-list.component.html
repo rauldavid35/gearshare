@@ -15,10 +15,13 @@
 
       <div class="text-sm text-slate-600">Price/day: {{ l.pricePerDay }} • Deposit: {{ l.deposit }}</div>
       <div class="text-sm text-slate-600">City: {{ l.locationCity || '—' }} • Active: {{ l.active }}</div>
+
       <div class="mt-2 flex gap-3">
         <a [routerLink]="['/app/listings', l.id, 'edit']" class="underline">Edit</a>
+        <a [routerLink]="['/app/listings', l.id]" class="underline">View</a>
         <button class="underline text-red-600" (click)="remove(l.id)">Delete</button>
       </div>
+
     </div>
   </div>
 </div>

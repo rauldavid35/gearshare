@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ListingsService } from '../../services/listings.service';
 import { ItemsService } from '../../services/items.service';
 import { ItemDto } from '../../models/item.model';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   standalone: true,
@@ -18,6 +19,7 @@ export class ListingEditComponent {
   private items = inject(ItemsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private auth = inject(AuthService);
 
   id = this.route.snapshot.paramMap.get('id');
   allItems: ItemDto[] = [];
@@ -33,8 +35,12 @@ export class ListingEditComponent {
   });
 
   ngOnInit() {
-    // load items for dropdown
-    this.items.list().subscribe(r => (this.allItems = r));
+    // Only show items owned by the current user → avoids 403 when creating listings
+    this.items.list().subscribe(items => {
+      const me = (this.auth as any)._currentUser?.value; // BehaviorSubject snapshot
+      const myId = me?.id as string | undefined;
+      this.allItems = myId ? items.filter(i => i.ownerId === myId) : [];
+    });
 
     if (this.id) {
       this.listings.get(this.id).subscribe(l =>
@@ -55,7 +61,6 @@ export class ListingEditComponent {
     const v = this.form.getRawValue();
 
     if (this.id) {
-      // update
       this.listings
         .update(this.id, {
           pricePerDay: v.pricePerDay,
@@ -67,7 +72,6 @@ export class ListingEditComponent {
         })
         .subscribe(() => this.router.navigateByUrl('/app/listings'));
     } else {
-      // create → go to edit page of new listing
       this.listings
         .create({
           itemId: v.itemId,
@@ -80,12 +84,5 @@ export class ListingEditComponent {
         })
         .subscribe(newL => this.router.navigate(['/app/listings', newL.id, 'edit']));
     }
-  }
-
-  // Stub to satisfy (change)="onFile($event)" if it's present in your template.
-  // Listings don't support file uploads; images belong to Items.
-  onFile(e: Event) {
-    (e.target as HTMLInputElement).value = '';
-    alert('Listings don’t support file upload. Upload images on the Item edit page.');
   }
 }

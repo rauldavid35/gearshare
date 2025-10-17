@@ -30,11 +30,17 @@
   </form>
 
   <div *ngIf="item?.images?.length" class="mt-6">
-    <h3 class="font-semibold mb-2">Images</h3>
-    <div class="grid grid-cols-3 gap-3">
-      <img *ngFor="let img of item!.images"
-           [src]="img"
-           class="w-full h-28 object-cover rounded border">
+  <h3 class="font-semibold mb-2">Images</h3>
+  <div class="grid grid-cols-3 gap-3">
+    <div *ngFor="let img of item!.images" class="relative">
+      <img [src]="img" class="w-full h-28 object-cover rounded border">
+      <button type="button"
+              class="absolute top-1 right-1 bg-white/90 border rounded text-xs px-2 py-1"
+              (click)="removeImage(img)">
+        Delete
+      </button>
     </div>
   </div>
+</div>
+
 </div>

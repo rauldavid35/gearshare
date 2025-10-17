@@ -1,16 +1,33 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Injectable, inject } from '@angular/core';
+import {
+  CanActivateFn,
+  Router,
+  UrlTree
+} from '@angular/router';
 import { AuthService } from './auth.service';
-import { map } from 'rxjs/operators';
+import { catchError, map, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
-  constructor(private auth: AuthService, private router: Router) {}
-  canActivate() {
-    return this.auth.currentUser$.pipe(map(u => {
-      if (u) return true;
-      if (!this.auth.token) { this.router.navigate(['/login']); return false; }
-      return true; // token exists; allow and let /me lazy-restore later if you want
-    }));
+export class AuthGuardClass {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
+  canActivate(returnUrl: string) {
+    // Fast path: if we already have a token in storage, allow.
+    if (this.auth.token) return of(true);
+
+    // Otherwise, try to hydrate the user (SSR/browser safe).
+    return this.auth.me().pipe(
+      map(() => true),
+      catchError(() =>
+        of(this.router.createUrlTree(['/login'], { queryParams: { returnUrl } }))
+      )
+    );
   }
 }
+
+// Angular standalone guard wrapper
+export const AuthGuard: CanActivateFn = (route, state): boolean | UrlTree | import('rxjs').Observable<boolean | UrlTree> => {
+  const guard = inject(AuthGuardClass);
+  return guard.canActivate(state.url);
+};

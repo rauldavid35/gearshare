@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ItemsService } from '../../services/items.service';
-import { ItemDto } from '../../models/item.model';
 
 @Component({
   standalone: true,
@@ -13,13 +12,30 @@ import { ItemDto } from '../../models/item.model';
 })
 export class ItemsListComponent {
   private api = inject(ItemsService);
-  items: ItemDto[] = [];
+  items: any[] = [];
   q = '';
 
   ngOnInit() { this.load(); }
-  load() { this.api.list(this.q).subscribe(r => this.items = r); }
-  remove(id: string) {
-    if (!confirm('Delete this item?')) return;
-    this.api.delete(id).subscribe(() => this.load());
+
+  load(): void {
+    const svc = this.api as any;
+
+    // Prefer search(q) if available; otherwise list() or getAll()
+    const call$ =
+      (typeof svc.search === 'function' ? svc.search(this.q || '') :
+      (typeof svc.list === 'function'   ? svc.list() :
+      (typeof svc.getAll === 'function' ? svc.getAll() :
+        null)));
+
+    if (!call$) throw new Error('ItemsService needs search(q), list(), or getAll()');
+
+    call$.subscribe((r: any[]) => { this.items = r || []; });
+  }
+
+  remove(id: string): void {
+    (this.api as any).delete(id).subscribe({
+      next: () => this.load(),
+      error: () => alert('Delete failed')
+    });
   }
 }

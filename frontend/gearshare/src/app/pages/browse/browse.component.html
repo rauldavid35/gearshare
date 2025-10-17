@@ -6,16 +6,24 @@
   </div>
 
   <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" *ngIf="listings.length">
-    <div *ngFor="let l of listings" class="border rounded p-4">
-      <div class="font-semibold mb-1">{{ l.itemTitle || ('Item: ' + l.itemId) }}</div>
+    <div *ngFor="let l of listings" class="border rounded p-4 flex flex-col gap-2">
+      <div class="font-semibold">{{ l.itemTitle || ('Item: ' + l.itemId) }}</div>
 
       <img *ngIf="l.coverImage"
            [src]="l.coverImage"
            alt=""
-           class="w-full h-32 object-cover rounded border mb-2">
+           class="w-full h-32 object-cover rounded border">
 
       <div class="text-sm text-slate-600">Price/day: {{ l.pricePerDay }} • Deposit: {{ l.deposit }}</div>
       <div class="text-sm text-slate-600">City: {{ l.locationCity || '—' }}</div>
+
+      <div class="mt-2">
+        <a class="border rounded px-3 py-1 hover:bg-slate-50"
+            [routerLink]="['/app/listings', l.id]">
+          View / Rent
+        </a>
+      </div>
+
     </div>
   </div>
 </div>

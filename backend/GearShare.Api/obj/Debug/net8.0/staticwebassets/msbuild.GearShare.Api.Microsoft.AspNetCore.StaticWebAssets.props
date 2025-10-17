@@ -1,11 +1,11 @@
 ﻿<Project>
   <ItemGroup>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\items\5d960dff-dc72-4c10-9cc8-fcc529d9d82c\01d0b82238f7439db737bb803ff99de0.png))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\items\f8acee43-5f95-4009-89fb-efcd43783e4f\22b63f54aa4d4f298b33533fc80104f5.png))">
       <SourceType>Package</SourceType>
       <SourceId>GearShare.Api</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/GearShare.Api</BasePath>
-      <RelativePath>uploads/items/5d960dff-dc72-4c10-9cc8-fcc529d9d82c/01d0b82238f7439db737bb803ff99de0.png</RelativePath>
+      <RelativePath>uploads/items/f8acee43-5f95-4009-89fb-efcd43783e4f/22b63f54aa4d4f298b33533fc80104f5.png</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -14,39 +14,7 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\items\5d960dff-dc72-4c10-9cc8-fcc529d9d82c\01d0b82238f7439db737bb803ff99de0.png))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\items\e874e012-13c7-4ae4-a389-a3e6746f100a\0d1a9321d18345968170bc7988115ccf.png))">
-      <SourceType>Package</SourceType>
-      <SourceId>GearShare.Api</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/GearShare.Api</BasePath>
-      <RelativePath>uploads/items/e874e012-13c7-4ae4-a389-a3e6746f100a/0d1a9321d18345968170bc7988115ccf.png</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\items\e874e012-13c7-4ae4-a389-a3e6746f100a\0d1a9321d18345968170bc7988115ccf.png))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\items\fc35a518-8f90-4c2f-8b4f-1ccea50372cf\7ae64bd8-a48d-472e-be4c-d7e626f715e4.png))">
-      <SourceType>Package</SourceType>
-      <SourceId>GearShare.Api</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/GearShare.Api</BasePath>
-      <RelativePath>uploads/items/fc35a518-8f90-4c2f-8b4f-1ccea50372cf/7ae64bd8-a48d-472e-be4c-d7e626f715e4.png</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\items\fc35a518-8f90-4c2f-8b4f-1ccea50372cf\7ae64bd8-a48d-472e-be4c-d7e626f715e4.png))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\items\f8acee43-5f95-4009-89fb-efcd43783e4f\22b63f54aa4d4f298b33533fc80104f5.png))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

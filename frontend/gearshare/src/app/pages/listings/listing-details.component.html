@@ -1,0 +1,87 @@
+<div class="app-container max-w-5xl">
+  <!-- Loading / Error -->
+  <div *ngIf="loading()" class="py-10 text-center text-slate-500">Loading listing…</div>
+  <div *ngIf="!loading() && error()" class="py-6 text-red-600">
+    {{ error() }}
+  </div>
+
+  <!-- Content -->
+  <ng-container *ngIf="!loading() && !error() && listing() as l">
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- Left: info + booking -->
+      <div class="flex-1 space-y-3">
+        <a routerLink="/app/browse" class="text-sm underline">← Back to browse</a>
+
+        <h1 class="text-2xl font-semibold">{{ l.itemTitle || 'Listing' }}</h1>
+        <div class="text-slate-600">
+          <span *ngIf="l.locationCity; else noLoc">{{ l.locationCity }}</span>
+          <ng-template #noLoc>No location</ng-template>
+        </div>
+
+        <div class="mt-2 text-lg">
+          <span class="font-semibold">{{ l.pricePerDay | currency:'RON' }}</span> / day
+          <span class="ml-3 text-slate-500">Deposit: {{ l.deposit | currency:'RON' }}</span>
+        </div>
+
+        <!-- Booking panel -->
+        <div class="mt-4 p-4 border rounded space-y-3">
+          <div class="flex flex-col md:flex-row gap-3 items-end">
+            <div>
+              <label class="block text-sm mb-1">Start</label>
+              <input type="date" [(ngModel)]="startDate" class="border rounded px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-sm mb-1">End</label>
+              <input type="date" [(ngModel)]="endDate" class="border rounded px-3 py-2">
+            </div>
+
+            <div class="ml-auto text-right">
+              <div class="text-sm text-slate-600">Days: <strong>{{ days }}</strong></div>
+              <div class="text-base">Total:
+                <strong>{{ totalPrice | currency:'RON' }}</strong>
+              </div>
+            </div>
+
+            <button type="button" class="bg-black text-white rounded px-4 py-2"
+                    (click)="requestBooking()" [disabled]="days <= 0">
+              Request booking
+            </button>
+          </div>
+          <p class="text-xs text-slate-500">Owner will accept/reject; overlaps blocked on accept.</p>
+        </div>
+      </div>
+
+      <!-- Right: images -->
+      <div class="flex-1">
+        <div class="space-y-2">
+          <!-- Cover -->
+          <ng-container *ngIf="l.coverImage as cover">
+            <div class="rounded overflow-hidden border">
+              <a [href]="cover" target="_blank" rel="noopener">
+                <img [src]="cover" alt="Cover" class="w-full max-h-80 object-cover">
+              </a>
+            </div>
+          </ng-container>
+
+          <!-- All item images -->
+          <ng-container *ngIf="item() as it; else noImages">
+            <ng-container *ngIf="it?.images as imgs; else noImages">
+              <div *ngIf="imgs.length > 0; else noImages"
+                   class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <a *ngFor="let img of (imgs || [])"
+                   [href]="img" target="_blank" rel="noopener"
+                   class="block rounded overflow-hidden border">
+                  <img [src]="img" class="w-full h-32 object-cover" alt="Item image">
+                </a>
+              </div>
+            </ng-container>
+          </ng-container>
+
+          <ng-template #noImages>
+            <div class="text-slate-500">No images for this item yet.</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

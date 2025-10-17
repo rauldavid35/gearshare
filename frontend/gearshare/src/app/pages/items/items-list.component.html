@@ -12,7 +12,7 @@
       <h3 class="font-semibold">{{ i.title }}</h3>
       <p class="text-slate-600 text-sm line-clamp-2">{{ i.description }}</p>
       <div class="mt-2 flex gap-3">
-        <a [routerLink]="['/app/items', i.id, 'edit']" class="underline">Edit</a>
+        <a [routerLink]="['/app/items', i.id]" class="underline">Edit</a>
         <button class="underline text-red-600" (click)="remove(i.id)">Delete</button>
       </div>
     </div>

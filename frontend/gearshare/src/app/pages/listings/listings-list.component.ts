@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ListingsService } from '../../services/listings.service';
-import { ListingDto } from '../../models/listing.model';
 
 @Component({
   standalone: true,
@@ -12,12 +11,27 @@ import { ListingDto } from '../../models/listing.model';
 })
 export class ListingsListComponent {
   private api = inject(ListingsService);
-  listings: ListingDto[] = [];
+  listings: any[] = [];
 
   ngOnInit() { this.load(); }
-  load() { this.api.list().subscribe(r => this.listings = r); }
-  remove(id: string) {
-    if (!confirm('Delete this listing?')) return;
-    this.api.delete(id).subscribe(() => this.load());
+
+  load(): void {
+    const svc = this.api as any;
+    const call$ =
+      (typeof svc.list === 'function'   ? svc.list() :
+      (typeof svc.search === 'function' ? svc.search('') :
+      (typeof svc.getAll === 'function' ? svc.getAll() :
+        null)));
+
+    if (!call$) throw new Error('ListingsService needs list(), search(""), or getAll()');
+
+    call$.subscribe((r: any[]) => { this.listings = r || []; });
+  }
+
+  remove(id: string): void {
+    (this.api as any).delete(id).subscribe({
+      next: () => this.load(),
+      error: () => alert('Delete failed')
+    });
   }
 }

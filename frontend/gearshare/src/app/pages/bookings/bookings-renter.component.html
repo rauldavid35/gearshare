@@ -1,0 +1,13 @@
+<div class="app-container max-w-4xl">
+    <h1 class="text-xl font-semibold mb-4">My bookings</h1>
+
+    <div *ngIf="list.length === 0" class="text-slate-500">You have no bookings yet.</div>
+
+    <div *ngFor="let b of list" class="border rounded p-3 mb-3">
+      <div class="font-medium">{{ b.listingTitle }}</div>
+      <div class="text-sm text-slate-600">
+        {{ b.startDate }} → {{ b.endDate }} • {{ b.totalPrice | currency:'RON' }}
+      </div>
+      <div class="text-xs mt-1">Status: <strong>{{ b.status }}</strong></div>
+    </div>
+  </div>

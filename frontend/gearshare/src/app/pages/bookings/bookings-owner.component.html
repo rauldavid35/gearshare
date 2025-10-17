@@ -1,0 +1,17 @@
+<div class="app-container max-w-4xl">
+    <h1 class="text-xl font-semibold mb-4">Pending bookings</h1>
+    <div *ngIf="list.length === 0" class="text-slate-500">No pending requests.</div>
+
+    <div *ngFor="let b of list" class="border rounded p-3 mb-3 flex items-center justify-between">
+      <div>
+        <div class="font-medium">{{ b.listingTitle }}</div>
+        <div class="text-sm text-slate-600">
+          {{ b.startDate }} → {{ b.endDate }} • {{ b.totalPrice | currency:'RON' }}
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="px-3 py-1 rounded border" (click)="act(b,'REJECTED')">Reject</button>
+        <button class="px-3 py-1 rounded bg-black text-white" (click)="act(b,'ACCEPTED')">Accept</button>
+      </div>
+    </div>
+  </div>

@@ -1,6 +1,5 @@
-using System;
 using GearShare.Api.Models;
-using GearShare.Api.Domain.Entities;   // <-- asigură-te că ai entitățile aici
+using GearShare.Api.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +11,10 @@ namespace GearShare.Api.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        // Week 2: domain sets
         public DbSet<Item> Items => Set<Item>();
         public DbSet<Listing> Listings => Set<Listing>();
         public DbSet<ItemImage> ItemImages => Set<ItemImage>();
+        public DbSet<Booking> Bookings => Set<Booking>();
 
         protected override void OnModelCreating(ModelBuilder b)
         {
@@ -26,7 +25,6 @@ namespace GearShare.Api.Data
             {
                 e.Property(i => i.Title).IsRequired().HasMaxLength(120);
                 e.Property(i => i.Description).HasMaxLength(2000);
-                // enum ca int în DB (explicit, deși EF ar face oricum int)
                 e.Property(i => i.Category).HasConversion<int>();
                 e.HasMany(i => i.Images)
                     .WithOne(img => img.Item)
@@ -41,7 +39,6 @@ namespace GearShare.Api.Data
             // Listing
             b.Entity<Listing>(e =>
             {
-                // pentru PostgreSQL: numeric(12,2) pe prețuri
                 e.Property(l => l.PricePerDay).HasColumnType("numeric(12,2)");
                 e.Property(l => l.Deposit).HasColumnType("numeric(12,2)");
                 e.HasIndex(l => l.ItemId);
@@ -53,6 +50,18 @@ namespace GearShare.Api.Data
                 e.Property(ii => ii.FileName).IsRequired();
                 e.Property(ii => ii.RelativePath).IsRequired();
                 e.HasIndex(ii => new { ii.ItemId, ii.SortOrder });
+            });
+
+            // Booking (minimal config; table already exists in your DB)
+            b.Entity<Booking>(e =>
+            {
+                e.Property(x => x.TotalPrice).HasColumnType("numeric(12,2)");
+                e.Property(x => x.Status).HasConversion<int>();
+                e.HasIndex(x => x.ListingId);
+                e.HasOne(x => x.Listing)
+                    .WithMany(l => l.Bookings)
+                    .HasForeignKey(x => x.ListingId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

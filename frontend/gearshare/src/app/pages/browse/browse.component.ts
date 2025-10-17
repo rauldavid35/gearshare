@@ -1,31 +1,35 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule, NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ListingsService } from '../../services/listings.service';
-import { ListingDto } from '../../models/listing.model';
-import { environment } from '../../../environments/environment';
 
 @Component({
   standalone: true,
   selector: 'app-browse',
-  imports: [CommonModule, NgFor],
+  imports: [CommonModule, RouterLink],
   templateUrl: './browse.component.html'
 })
 export class BrowseComponent {
   private api = inject(ListingsService);
-  listings: ListingDto[] = [];
+  listings: any[] = [];
 
-  // http://localhost:5131  (strip trailing /api if present)
-  apiOrigin = environment.apiUrl.replace(/\/api\/?$/, '');
+  ngOnInit() { this.load(); }
 
-  ngOnInit() {
-    this.api.list().subscribe(r => {
-      this.listings = (r ?? []).filter(x => x.active);
-    });
-  }
+  private load(): void {
+    // Try common method names in order: search(''), list(), getAll()
+    const svc = this.api as any;
 
-  toImg(path?: string | null): string {
-    if (!path) return '';
-    if (/^https?:\/\//i.test(path)) return path;          // already absolute
-    return `${this.apiOrigin}${path.startsWith('/') ? path : '/' + path}`; // prefix API origin
+    const call$ =
+      (typeof svc.search === 'function' ? svc.search('') :
+      (typeof svc.list === 'function'   ? svc.list() :
+      (typeof svc.getAll === 'function' ? svc.getAll() :
+        null)));
+
+    if (!call$) {
+      // Last-resort: throw a clear error early in dev
+      throw new Error('ListingsService needs search(""), list(), or getAll()');
+    }
+
+    call$.subscribe((r: any[]) => { this.listings = r || []; });
   }
 }

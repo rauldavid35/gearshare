@@ -1,4 +1,5 @@
 namespace GearShare.Api.Domain.Entities;
+
 public class Listing
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -10,4 +11,7 @@ public class Listing
     public double? LocationLat { get; set; }
     public double? LocationLng { get; set; }
     public bool Active { get; set; } = true;
+
+    // NEW: backref for owner views / integrity
+    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }

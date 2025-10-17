@@ -82,4 +82,13 @@ export class ItemEditComponent {
       }
     });
   }
+
+  removeImage(url: string) {
+  if (!this.id) return;
+  this.api.deleteImageByUrl(this.id, url).subscribe({
+    next: () => this.loadItem(),
+    error: e => alert(e?.error || 'Failed to delete image')
+  });
+}
+
 }
