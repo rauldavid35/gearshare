@@ -76,25 +76,51 @@ public class ItemsController : ControllerBase
     }
 
     // GET /api/items/{id}
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ItemDto>> GetOne(Guid id, CancellationToken ct)
+[HttpGet("{id:guid}")]
+public async Task<ActionResult<ItemDto>> GetOne(Guid id, CancellationToken ct)
+{
+    var item = await _db.Items
+        .AsNoTracking()
+        .Include(i => i.Images)
+        .Include(i => i.Listings)
+        .FirstOrDefaultAsync(i => i.Id == id, ct);
+
+    if (item is null) return NotFound();
+
+    // DEBUG
+    Console.WriteLine($"[GetOne] Item loaded: {item.Id}");
+    Console.WriteLine($"[GetOne] Images null? {item.Images == null}, Count: {item.Images?.Count ?? 0}");
+    if (item.Images != null)
     {
-        var item = await _db.Items
-            .AsNoTracking()
-            .Include(i => i.Images)
-            .Include(i => i.Listings)
-            .FirstOrDefaultAsync(i => i.Id == id, ct);
-
-        if (item is null) return NotFound();
-
-        var dto = _mapper.Map<ItemDto>(item);
-        var imgs = (dto.Images ?? Enumerable.Empty<string>())
-            .Select(p => Request.ToAbsoluteContentUrl(p)!)
-            .ToList();
-        dto = dto with { Images = imgs };
-
-        return Ok(dto);
+        foreach (var img in item.Images)
+        {
+            Console.WriteLine($"[GetOne]   Entity: FileName={img.FileName}, RelativePath={img.RelativePath}");
+        }
     }
+
+    var dto = _mapper.Map<ItemDto>(item);
+    
+    Console.WriteLine($"[GetOne] After mapping, DTO Images count: {dto.Images?.Count ?? 0}");
+    if (dto.Images != null)
+    {
+        foreach (var img in dto.Images)
+        {
+            Console.WriteLine($"[GetOne]   DTO image: '{img}'");
+        }
+    }
+
+    var imgs = (dto.Images ?? Enumerable.Empty<string>())
+        .Select(p => {
+            var absolute = Request.ToAbsoluteContentUrl(p);
+            Console.WriteLine($"[GetOne]   '{p}' -> '{absolute}'");
+            return absolute;
+        })
+        .ToList();
+    
+    dto = dto with { Images = imgs! };
+
+    return Ok(dto);
+}
 
     // POST /api/items
     [Authorize(Roles = "OWNER,ADMIN")]

@@ -41,6 +41,19 @@ export class ItemEditComponent {
   private loadItem() {
     this.api.get(this.id!).subscribe(i => {
       this.item = i;
+      
+      // DEBUG: Log what we're getting
+      console.log('=== LOADED ITEM DEBUG ===');
+      console.log('Full item:', JSON.stringify(i, null, 2));
+      console.log('Images array:', i.images);
+      console.log('Images is Array?:', Array.isArray(i.images));
+      if (i.images && i.images.length > 0) {
+        console.log('First image value:', i.images[0]);
+        console.log('First image type:', typeof i.images[0]);
+        console.log('First image constructor:', i.images[0]?.constructor?.name);
+      }
+      console.log('=========================');
+      
       this.form.patchValue({
         title: i.title,
         description: i.description ?? '',
@@ -84,11 +97,22 @@ export class ItemEditComponent {
   }
 
   removeImage(url: string) {
-  if (!this.id) return;
-  this.api.deleteImageByUrl(this.id, url).subscribe({
-    next: () => this.loadItem(),
-    error: e => alert(e?.error || 'Failed to delete image')
-  });
-}
-
+    if (!this.id) return;
+    
+    // DEBUG: Log what we're trying to delete
+    console.log('Attempting to delete image:', url);
+    console.log('Type of url:', typeof url);
+    console.log('URL stringified:', JSON.stringify(url));
+    
+    // Ensure we're passing a string
+    const imageUrl = typeof url === 'string' ? url : String(url);
+    
+    this.api.deleteImageByUrl(this.id, imageUrl).subscribe({
+      next: () => this.loadItem(),
+      error: e => {
+        console.error('Delete error:', e);
+        alert(e?.error || 'Failed to delete image');
+      }
+    });
+  }
 }

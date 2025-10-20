@@ -73,66 +73,116 @@ public class ItemImagesController : ControllerBase
         });
     }
 
-    [HttpDelete] // DELETE /api/items/{itemId}/images?url=...
+    [HttpDelete]
 [Authorize(Roles = "OWNER,ADMIN")]
 public async Task<IActionResult> DeleteByUrl(Guid itemId, [FromQuery] string url, CancellationToken ct)
 {
     if (string.IsNullOrWhiteSpace(url))
         return BadRequest("Missing 'url' query parameter.");
 
-    // 1) Load item & authorize (owner or admin)
+    // DEBUG: Log the raw URL we received
+    Console.WriteLine($"[DELETE] Raw URL received: '{url}'");
+    Console.WriteLine($"[DELETE] URL type: {url.GetType().Name}");
+    Console.WriteLine($"[DELETE] URL length: {url.Length}");
+
+    // 1) Load item & authorize
     var item = await _db.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == itemId, ct);
     if (item is null) return NotFound("Item not found.");
     if (!IsOwnerOrAdmin(item.OwnerId)) return Forbid();
 
-    // 2) Extract file name from absolute or relative URL
-    string fileName;
+    // 2) Extract filename from URL - try multiple strategies
+    string fileName = null;
+    
+    // Strategy 1: Standard URI parsing
     try
     {
         var uri = new Uri(url, UriKind.RelativeOrAbsolute);
         fileName = Path.GetFileName(uri.IsAbsoluteUri ? uri.AbsolutePath : uri.ToString());
+        Console.WriteLine($"[DELETE] Strategy 1 - Extracted fileName: '{fileName}'");
     }
-    catch
+    catch (Exception ex)
     {
-        fileName = Path.GetFileName(url);
+        Console.WriteLine($"[DELETE] Strategy 1 failed: {ex.Message}");
     }
-    if (string.IsNullOrEmpty(fileName))
-        return BadRequest("Invalid image URL.");
 
-    // 3) Try to delete the expected relative path first
-    var expectedRel = $"/uploads/items/{itemId}/{fileName}";
-    try { await _imageStorage.DeleteAsync(expectedRel); } catch { /* ignore */ }
-
-    // 4) If file still exists, fallback: search by file name anywhere under /uploads/items
-    string uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "items");
-    try
+    // Strategy 2: If that failed or gave weird result, try simple string parsing
+    if (string.IsNullOrEmpty(fileName) || fileName.Contains("GearShare") || fileName.Length > 100)
     {
-        if (Directory.Exists(uploadsRoot))
+        Console.WriteLine($"[DELETE] Strategy 1 result invalid, trying Strategy 2");
+        // Try to find the last / and get everything after it
+        var lastSlash = url.LastIndexOf('/');
+        if (lastSlash >= 0 && lastSlash < url.Length - 1)
         {
-            // Find all matches by exact filename (case-insensitive)
-            var matches = Directory.GetFiles(uploadsRoot, fileName, SearchOption.AllDirectories);
-            foreach (var full in matches)
-            {
-                try { System.IO.File.Delete(full); } catch { /* ignore */ }
-            }
+            fileName = url.Substring(lastSlash + 1);
+            Console.WriteLine($"[DELETE] Strategy 2 - Extracted fileName: '{fileName}'");
         }
     }
-    catch { /* ignore */ }
 
-    // 5) Remove DB row if present (optional best-effort)
-    var lowerName = fileName.ToLower();
-    var dbImage = await _db.ItemImages
-        .FirstOrDefaultAsync(ii => ii.ItemId == itemId && ii.FileName.ToLower() == lowerName, ct);
-
-    if (dbImage != null)
+    if (string.IsNullOrEmpty(fileName) || fileName.Contains("GearShare"))
     {
-        _db.ItemImages.Remove(dbImage);
-        await _db.SaveChangesAsync(ct);
+        Console.WriteLine($"[DELETE] All strategies failed. Trying to match by partial URL");
+        // Strategy 3: Just try to find ANY image that contains part of the URL
+        var allImages = await _db.ItemImages.Where(ii => ii.ItemId == itemId).ToListAsync(ct);
+        Console.WriteLine($"[DELETE] Found {allImages.Count} images for item");
+        
+        // If there's only one image, just delete it
+        if (allImages.Count == 1)
+        {
+            var dbImage = allImages[0];
+            Console.WriteLine($"[DELETE] Only one image found, deleting it: {dbImage.FileName}");
+            
+            try { await _imageStorage.DeleteAsync(dbImage.RelativePath); } 
+            catch (Exception ex) { Console.WriteLine($"Failed to delete file: {ex.Message}"); }
+            
+            _db.ItemImages.Remove(dbImage);
+            await _db.SaveChangesAsync(ct);
+            return NoContent();
+        }
+        
+        return BadRequest($"Invalid image URL: '{url}'");
     }
 
+    Console.WriteLine($"[DELETE] Final fileName to search: '{fileName}'");
+
+    // 3) Find the DB record by filename
+    var imageRecord = await _db.ItemImages
+        .FirstOrDefaultAsync(ii => ii.ItemId == itemId && ii.FileName == fileName, ct);
+
+    if (imageRecord == null)
+    {
+        // Try matching by RelativePath instead
+        imageRecord = await _db.ItemImages
+            .FirstOrDefaultAsync(ii => ii.ItemId == itemId && ii.RelativePath.Contains(fileName), ct);
+    }
+    
+    if (imageRecord == null)
+    {
+        var allImages = await _db.ItemImages.Where(ii => ii.ItemId == itemId).ToListAsync(ct);
+        Console.WriteLine($"[DELETE] Image not found. Available images:");
+        foreach (var img in allImages)
+        {
+            Console.WriteLine($"  - {img.FileName}");
+        }
+        return NotFound($"Image not found. Searched for: '{fileName}'");
+    }
+
+    // 4) Delete the physical file
+    try
+    {
+        await _imageStorage.DeleteAsync(imageRecord.RelativePath);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Failed to delete file {imageRecord.RelativePath}: {ex.Message}");
+    }
+
+    // 5) Remove from database
+    _db.ItemImages.Remove(imageRecord);
+    await _db.SaveChangesAsync(ct);
+
+    Console.WriteLine($"[DELETE] Successfully deleted image: {imageRecord.FileName}");
     return NoContent();
 }
-
 // helper same as in ItemsController
 private bool IsOwnerOrAdmin(Guid ownerId)
 {
